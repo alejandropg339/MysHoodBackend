@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 
 import userRoutes from './routes/users.routes';
+import { dbConnection } from "./database";
 
 export class Server {
     private app: Application;
@@ -14,7 +15,7 @@ export class Server {
     constructor() {
       this.app = express();
       this.port = process.env.PORT || "8000";
-    //   this.dbConncection();
+      this.conncectionDB();
       this.middlewares();
       this.routes();
     }
@@ -23,6 +24,10 @@ export class Server {
         this.app.use(cors());
         this.app.use(express.json());
         this.app.use(morgan("dev"));
+      }
+
+      async conncectionDB() {
+        await dbConnection();
       }
 
       routes(){
