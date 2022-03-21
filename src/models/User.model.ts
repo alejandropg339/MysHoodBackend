@@ -1,4 +1,5 @@
 import pkg from 'mongoose';
+import bcrypt from "bcrypt";
 import { UserCreateRequestInterface } from '../interfaces/models/user.interface';
 const { Schema, model } = pkg;
 
@@ -21,4 +22,38 @@ const UserSchema = new Schema<UserCreateRequestInterface>({
         timestamps: true
     });
 
-export default model('User', UserSchema);
+// Method to encrypt password
+// UserSchema.statics.encryptPassword = async (password: string) => {
+//     // genero salt ejecutando 10 veces algoritmo, es aceptable para no consumir muchos recursos de servidor
+//     const salt = await bcrypt.genSalt(10);
+//     return await bcrypt.hash(password, salt);
+// };
+
+// Static method to verify compare the passwords
+// UserSchema.statics.comparePassword = async (
+//     receivedPassword: string,
+//     actualPassword: string
+// ) => {
+//     return await bcrypt.compare(receivedPassword, actualPassword);
+// };
+
+UserSchema.pre<UserCreateRequestInterface>("save", async function (next) {
+    const user = this;
+
+    if (!user.isModified("password")) return next();
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(user.password, salt);
+    user.password = hash;
+
+    next();
+});
+
+UserSchema.methods.comparePassword = async function (
+    password: string
+): Promise<boolean> {
+    return await bcrypt.compare(password, this.password);
+};
+
+
+export default model<UserCreateRequestInterface>('User', UserSchema);

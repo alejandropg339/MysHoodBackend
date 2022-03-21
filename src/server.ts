@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 
 import userRoutes from './routes/users.routes';
+import authRoutes from './routes/auth.routes';
 import { dbConnection } from "./database";
 
 export class Server {
@@ -10,6 +11,7 @@ export class Server {
     private port: string;
     private apiPaths = {
       users: "/api/users",
+      auth: '/api/auth/'
     };
 
     constructor() {
@@ -32,6 +34,7 @@ export class Server {
 
       routes(){
         this.app.use(this.apiPaths.users, userRoutes);
+        this.app.use(this.apiPaths.auth, authRoutes);
       }
 
     listen(){

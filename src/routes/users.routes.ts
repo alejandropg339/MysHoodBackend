@@ -1,8 +1,10 @@
+import { verifyConsultPersonalData } from './../middlewares/user.middlewares';
+import { verifyToken } from './../middlewares/authJWT';
 import { Router } from "express";
-import { createUser } from "../controllers/users.controller";
+import { personalData } from "../controllers/users.controller";
 
 const router: Router = Router();
 
-router.post('/', createUser);
+router.get('/personal-info/:id', [verifyToken, verifyConsultPersonalData], personalData);
 
 export default router;
